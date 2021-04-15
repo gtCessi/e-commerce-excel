@@ -1,0 +1,29 @@
+import openpyxl
+from random import uniform, randint
+import chromeauto
+
+
+chrome = chromeauto.ChromeAuto()
+chrome.acessa('https://br.investing.com/currencies/usd-brl')
+chrome.cotreal()
+real = chrome.cotreal()
+chrome.sair()
+
+
+price_sheet = openpyxl.Workbook()
+price_sheet.create_sheet('USD to BRL', 0)
+
+sheetbr = price_sheet['USD to BRL']
+
+sheetbr.cell(1, 1).value = 'Order/Pedido'
+sheetbr.cell(1, 2).value = 'Order ID/ID do Pedido'
+sheetbr.cell(1, 3).value = 'Price/Preço USD'
+sheetbr.cell(1, 4).value = 'Price/Preço BRL'
+
+for line in range(2, 11):
+    sheetbr.cell(line, 1).value = line
+    sheetbr.cell(line, 2).value = randint(10000, 99999)
+    sheetbr.cell(line, 3).value = round(uniform(1, 10000), 2)
+    sheetbr.cell(line, 4).value = round(sheetbr.cell(line, 3).value * real, 2)
+
+price_sheet.save('E-commerce example.xlsx')
