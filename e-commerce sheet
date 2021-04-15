@@ -1,25 +1,30 @@
-import openpyxl
-from random import randint, uniform
+from selenium import webdriver
 
 
-sheet = openpyxl.Workbook()
-sheet.create_sheet('Sheet 1', 0)
-sheet.create_sheet('Sheet 2', 1)
 
-sheet1 = sheet['Sheet 1']
-sheet2 = sheet['Sheet 2']
+class ChromeAuto:
+    def __init__(self):
+        self.driver_path = 'chromedriver'  # caminho do driver
+        self.options = webdriver.ChromeOptions()
+        #self.options.add_argument('user-data-dir=Cessi')
+        self.chrome = webdriver.Chrome(
+            self.driver_path,
+            options=self.options
+        )
 
-sheet1.cell(1, 1).value = 'Order'
-sheet1.cell(1, 2).value = 'Order ID'
-sheet1.cell(1, 3).value = 'Price (USD)'
-sheet1.cell(1, 4).value = 'Price (BRL)'
+    def acessa(self, site):
+        self.chrome.get(site)
 
-# pra fazer uma tabela de precos internacionais, basta inserir colunas com a cotacao da moeda base
-for line in range(2, 11):  
-    sheet1.cell(line, 1).value = line
-    sheet1.cell(line, 2).value = randint(0, 1000)
-    sheet1.cell(line, 3).value = round(uniform(10, 10000), 2)  # valor pre definido pelo mercado
-    sheet1.cell(line, 4).value = round(uniform(10, 10000), 2) * 5.69  # valor para a moeda nova(usd para brl)
+    def sair(self):
+        self.chrome.quit()
+
+    def cotreal(self):
+        real = self.chrome.find_element_by_id('last_last')
+        return float(real.text.strip().replace(',', '.'))
 
 
-sheet.save('test_sheet.xlsx')
+if __name__ == '__main__':
+    chrome = ChromeAuto()
+    chrome.acessa('https://br.investing.com/currencies/usd-brl')
+    chrome.cotreal()
+    chrome.sair()
